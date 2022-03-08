@@ -62,7 +62,7 @@ import * as vscode from 'vscode';
  * *NOTE*: When doing edits, it is possible that multiple edits occur until VS Code decides to invoke the semantic tokens provider.
  * *NOTE*: If the provider cannot temporarily compute semantic tokens, it can indicate this by throwing an error with the message 'Busy'.
  */
-export function rangesByName(data: vscode.SemanticTokens, legend: vscode.SemanticTokensLegend, editor: vscode.TextEditor, highlightGlobals: boolean): Map<string, vscode.Range[]> {
+export function rangesByName(data: vscode.SemanticTokens, legend: vscode.SemanticTokensLegend, editor: vscode.TextEditor, highlightGlobals: boolean, highlightClasses: boolean): Map<string, vscode.Range[]> {
     const accumulatorParam: Map<string, vscode.Range[]> = new Map();
     const accumulatorVar: Map<string, vscode.Range[]> = new Map();
     const accumulatorWithDec: Map<string, boolean> = new Map();
@@ -103,6 +103,14 @@ export function rangesByName(data: vscode.SemanticTokens, legend: vscode.Semanti
                 } else {
                     accumulatorParam.set(name, [range]);
                 }
+            }
+        }
+
+        if (highlightClasses && kind === 'class') {
+            if (accumulatorVar.has(name)) {
+                accumulatorVar.get(name)!.push(range);
+            } else {
+                accumulatorVar.set(name, [range]);
             }
         }
     }
